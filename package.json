@@ -1,0 +1,21 @@
+{
+  "name": "universo-chat",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "UNIVERSO CHAT: chat em planetas com VIP, boliche e canhão. Servidor sem dependências; o visual 3D usa three.",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node --check server.js && node --check githubstore.js && node --check app.js && node --check avatar3d.js && node --check audio3d.js && node --check music.js && node --check zombie3d.js && node --check bowling3d.js && node --check cannon3d.js && node --check fishing3d.js && node --check cave3d.js && node --check soccer3d.js && node --check sw.js",
+    "lint": "node --check server.js && node --check githubstore.js && node --check app.js && node --check avatar3d.js && node --check audio3d.js && node --check music.js && node --check zombie3d.js && node --check bowling3d.js && node --check cannon3d.js && node --check fishing3d.js && node --check cave3d.js && node --check soccer3d.js && node --check sw.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@google/genai": "^3.6.1",
+    "three": "^0.187.0",
+    "firebase-admin": "^13.5.0"
+  }
+}

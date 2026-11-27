@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: universo-chat
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    envVars:
+      - key: DEV_NAME
+        value: IIBERTOX
+      - key: DEV_PASS
+        sync: false
+      - key: PIX_KEY
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: UNIVERSO CHAT

@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.*
+!.env.example
+data.json
+data.json.tmp
+data.json.backup.json
+data.json.backup.json.tmp
+data.backup.json
+voices/
+universo-chat.zip
+.DS_Store
+
+codeedits/
+verifyphotos/

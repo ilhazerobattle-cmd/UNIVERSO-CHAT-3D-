@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Escape da Prisão 3D — Universo Chat</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b16;color:#fff;font-family:system-ui}#game{position:fixed;inset:0}canvas{display:block}
+.hud{position:fixed;z-index:2;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}.panel{background:#090d1ddd;border:1px solid #58617a;border-radius:14px;padding:10px 13px;box-shadow:0 5px 22px #0008}.title{font-weight:900;color:#ffcb26}.sub{font-size:12px;color:#d4d8e5}.stats{font-weight:800}.help{position:fixed;z-index:2;left:12px;bottom:14px;max-width:210px;font-size:12px;line-height:1.45}.controls{position:fixed;z-index:3;right:18px;bottom:24px;display:flex;flex-direction:column;gap:10px}.controls button{width:70px;height:58px;border-radius:18px;border:1px solid #8794b7;background:#101a36dd;color:white;font-weight:800;font-size:13px}.joy{position:fixed;z-index:3;left:20px;bottom:26px;width:128px;height:128px;border-radius:50%;background:#101a3677;border:2px solid #4a8bd5;touch-action:none}.nub{position:absolute;left:39px;top:39px;width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#06b6d4);border:2px solid white}.toast{position:fixed;z-index:5;left:50%;top:45%;transform:translate(-50%,-50%);background:#10172beF;border:1px solid #f6c746;border-radius:16px;padding:14px 20px;text-align:center;font-weight:800;display:none}.end{position:fixed;z-index:6;inset:0;background:#050816eF;display:none;place-items:center;text-align:center;padding:24px}.end .panel{max-width:340px}
+</style></head><body><div id="game"></div>
+<div class="hud"><div class="panel"><div class="title">UNIVERSO CHAT 3D</div><div class="sub">ESCAPE DA PRISÃO 3D</div><div id="objective">Encontre a chave dourada</div></div><div class="panel stats"><div>⏱ <span id="time">00:00</span></div><div>🗝 <span id="key">0/1</span></div><div>⭐ <span id="score">0</span></div></div></div>
+<div class="panel help">Explore as salas e corredores.<br>Encontre a chave e alcance a porta verde.<br>Celular: use o controle e os botões.</div>
+<div class="joy" id="joy"><div class="nub" id="nub"></div></div><div class="controls"><button id="run">CORRER</button><button id="act">PEGAR / ABRIR</button></div>
+<div class="toast" id="toast"></div><div class="end" id="end"><div class="panel"><h2 id="endtitle">Você escapou!</h2><p id="endtext"></p><button onclick="location.reload()" style="padding:12px 20px;border:0;border-radius:10px;background:#6d28d9;color:white;font-weight:800">Jogar novamente</button></div></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const host=document.querySelector('#game'),scene=new THREE.Scene();scene.background=new THREE.Color(0x111827);scene.fog=new THREE.Fog(0x111827,13,48);
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,100);const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xb9d6ff,0x29202a,1.8));const light=new THREE.DirectionalLight(0xffe2b0,2.1);light.position.set(-5,10,5);light.castShadow=true;scene.add(light);
+const mat=(c,r=.85,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m});
+const concrete=mat(0x59616b),dark=mat(0x262d37),floorMat=mat(0x343b48),bar=mat(0x171c25,.4,.65),gold=mat(0xffc52d,.28,.5),green=mat(0x18bd73,.3);
+function cube(x,y,z,w,h,d,m,coll=true){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);if(coll)solids.push({x,z,w,d});return o}
+const solids=[];cube(0,-.18,0,34,.35,42,floorMat,false);
+function wall(x,z,w,d,h=3.4){cube(x,h/2,z,w,h,d,concrete)}
+// corredores e salas conectadas
+wall(0,-21,34,.5);wall(-17,0,.5,42);wall(17,0,.5,42);wall(0,21,34,.5);
+wall(-7,-11,.35,19);wall(7,-11,.35,19);wall(-7,9,.35,19);wall(7,9,.35,19);
+wall(-12,0,10,.35);wall(12,0,10,.35);wall(0,-2,10,.35);wall(0,13,10,.35);
+// vãos e portas cenográficas
+for(let z of [-15,-7,5,16]){cube(-12,1.4,z,2.6,2.8,.18,dark,false);for(let i=0;i<6;i++)cube(-13+i*.4,1.4,z,.06,2.8,.1,bar,false)}
+for(let x of [-12,12]){cube(x,1.5,20,2.8,3,.25,dark,false)}
+// luzes de teto
+for(let x of [-10,0,10])for(let z of [-16,-5,7,17]){const l=new THREE.PointLight(0xffd99a,14,9);l.position.set(x,2.8,z);scene.add(l);cube(x,3.25,z,1.4,.08,.45,mat(0xffe8ba),false)}
+// crates
+for(const p of [[-13, -5],[13,8],[10,-16],[-10,15]])cube(p[0],.65,p[1],1.3,1.3,1.3,mat(0x795333));
+const player=new THREE.Group();const body=new THREE.Mesh(new THREE.CapsuleGeometry(.34,.85,4,8),mat(0x2563a8));body.position.y=.85;player.add(body);const head=new THREE.Mesh(new THREE.SphereGeometry(.24,16,12),mat(0xd9a47e));head.position.y=1.55;player.add(head);scene.add(player);player.position.set(0,0,17);
+const key=new THREE.Mesh(new THREE.TorusGeometry(.35,.09,10,24),gold);key.position.set(-12,.8,-14);key.rotation.x=Math.PI/2;scene.add(key);const keyGlow=new THREE.PointLight(0xffc52d,8,5);keyGlow.position.copy(key.position);scene.add(keyGlow);
+const exit=cube(0,1,-19,2.2,2.2,.3,green,false);const glow=new THREE.PointLight(0x18ff91,10,6);glow.position.set(0,2,-18);scene.add(glow);
+let got=false,done=false,elapsed=0,score=0,move={x:0,y:0},running=false,look=0;
+const toast=document.querySelector('#toast');function say(t){toast.textContent=t;toast.style.display='block';setTimeout(()=>toast.style.display='none',1600)}
+function near(a,b,dist=1.8){return Math.hypot(a.x-b.x,a.z-b.z)<dist}
+function action(){if(done)return;if(!got&&near(player.position,key.position,2)){got=true;scene.remove(key);document.querySelector('#key').textContent='1/1';document.querySelector('#objective').textContent='Vá até a saída verde';score+=100;document.querySelector('#score').textContent=score;say('Chave encontrada! Vá até a saída.')}else if(got&&near(player.position,exit.position,2.5)){done=true;document.querySelector('#endtitle').textContent='Você escapou!';document.querySelector('#endtext').textContent=`Tempo: ${document.querySelector('#time').textContent} · Pontuação: ${score+Math.max(0,300-Math.floor(elapsed))}`;document.querySelector('#end').style.display='grid'}else say(got?'Procure a saída verde.':'Ainda não há nada para pegar aqui.')}
+document.querySelector('#act').onclick=action;document.querySelector('#run').onpointerdown=()=>running=true;document.querySelector('#run').onpointerup=()=>running=false;document.querySelector('#run').onpointerleave=()=>running=false;
+const joy=document.querySelector('#joy'),nub=document.querySelector('#nub');let jid=null;joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid);joyMove(e)});joy.addEventListener('pointermove',e=>{if(e.pointerId===jid)joyMove(e)});function joyMove(e){const r=joy.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),len=Math.hypot(dx,dy),k=Math.min(1,48/(len||1));move.x=dx*k/48;move.y=dy*k/48;nub.style.transform=`translate(${move.x*42}px,${move.y*42}px)`}function joyEnd(){jid=null;move={x:0,y:0};nub.style.transform=''}joy.addEventListener('pointerup',joyEnd);joy.addEventListener('pointercancel',joyEnd);
+const keys={};addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' '||e.key==='e')action()});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+function blocked(x,z){return solids.some(s=>Math.abs(x-s.x)<s.w/2+.38&&Math.abs(z-s.z)<s.d/2+.38)}
+let prev=performance.now();function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-prev)/1000,.04);prev=now;if(!done){elapsed+=dt;let t=Math.floor(elapsed);document.querySelector('#time').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');let ix=move.x+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),iz=move.y+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.arrowup?1:0);let len=Math.hypot(ix,iz);if(len>1){ix/=len;iz/=len}const speed=running?6.5:3.8;let nx=player.position.x+ix*speed*dt,nz=player.position.z+iz*speed*dt;if(!blocked(nx,player.position.z))player.position.x=THREE.MathUtils.clamp(nx,-15.8,15.8);if(!blocked(player.position.x,nz))player.position.z=THREE.MathUtils.clamp(nz,-19.5,19.5);if(len>.05)player.rotation.y=Math.atan2(ix,iz);if(!got){key.rotation.z+=dt*1.8;key.position.y=.8+Math.sin(now*.003)*.12;keyGlow.position.copy(key.position)}}
+const target=new THREE.Vector3(player.position.x,1.2,player.position.z);const behind=new THREE.Vector3(player.position.x,4.4,player.position.z+6.8);camera.position.lerp(behind,.08);camera.lookAt(target);renderer.render(scene,camera)}
+requestAnimationFrame(frame);addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+</script></body></html>
