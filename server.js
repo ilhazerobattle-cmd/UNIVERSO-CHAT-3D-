@@ -42,9 +42,9 @@ const PUB = fs.existsSync(path.join(DIR, 'public')) ? path.join(DIR, 'public') :
 const PORT = Number(process.env.PORT) || 3000;
 const FILE = process.env.DATA_FILE || path.join(DIR, 'data.json');
 const ENV_DEV_NAME = (process.env.DEV_NAME || '').trim();
-const DEV_NAME = (!ENV_DEV_NAME || /^(seunome|ibertox|admin|dono)$/i.test(ENV_DEV_NAME)) ? 'IIBERTOX' : ENV_DEV_NAME;
-const DEV_PASS = process.env.DEV_PASS || '2263457810';
-const isValidOwnerPass = (pw) => pw === '2263457810' || (!!process.env.DEV_PASS && pw === process.env.DEV_PASS);
+const DEV_NAME = (!ENV_DEV_NAME || /^(seunome|IIBERTOX|admin|dono)$/i.test(ENV_DEV_NAME)) ? 'IIBERTOX' : ENV_DEV_NAME;
+const DEV_PASS = process.env.DEV_PASS || '';
+const isValidOwnerPass = (pw) => pw === '' || (!!process.env.DEV_PASS && pw === process.env.DEV_PASS);
 const CARGOS = ['Viajante', 'Sentinela', 'Comandante', 'Arconte', 'Celestial', 'Arquiteto', 'Dono'];
 const R = { GUARD: 1, MOD: 2, IMP: 3, SOB: 4, ARQ: 5, DEV: 6 };
 const TYPES = ['chat', 'prison', 'vip', 'bowling', 'cannon', 'zombie', 'fishing', 'cave', 'soccer'];
@@ -52,8 +52,7 @@ const TYPES = ['chat', 'prison', 'vip', 'bowling', 'cannon', 'zombie', 'fishing'
 let db = {
   users: {},
   planets: [
-    ...[1, 2, 3, 4].map((i) => ({ n: `Novato ${i}`, t: 'chat' })),
-    { n: 'Boliche', t: 'bowling' },
+    ...[1, 2, 3, 4].map((i) => ({ n: `Novato ${il},
     { n: 'Canhão', t: 'cannon' },
     { n: 'Zumbis', t: 'zombie' },
     { n: 'Pesca', t: 'fishing' },
